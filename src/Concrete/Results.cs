@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 
 namespace FireManager.Concrete
@@ -21,6 +21,9 @@ namespace FireManager.Concrete
 
         [XmlElement(ElementName = "ranges")]
         public ResultsRanges ResultsRanges { get; set; }
+
+        [XmlElement(ElementName = "error")]
+        public Error Error { get; set; }
 
         [XmlElement(ElementName = "authentication")]
         public Authentication Authentication { get; set; }

@@ -1,4 +1,4 @@
-﻿using System.Xml.Serialization;
+using System.Xml.Serialization;
 
 namespace FireManager.Concrete
 {
@@ -11,6 +11,6 @@ namespace FireManager.Concrete
         public Name Name { get; set; }
 
         [XmlElement(ElementName = "positions")]
-        public Positions[] Positions { get; set; }
+        public Positions[] Positions { get; set; } = System.Array.Empty<Positions>();
     }
 }

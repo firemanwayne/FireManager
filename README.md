@@ -91,3 +91,52 @@ Each method tests a different portion of the api to ensure that the returned dat
 Task<bool> RunTestSuite();
 ```
 method.
+
+## Timezone and error handling
+
+Scheduling requests default to the America/Chicago (Central) department timezone,
+with daily windows starting at 05:00. Configure these independently of the server:
+
+```csharp
+services.AddFireManager(options =>
+{
+    options.AccountKey("<AccountKey>");
+    options.AccountUrl("<AccessUrl>");
+    options.AccountId("<AccountId>");
+    options.DepartmentTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Chicago");
+    options.ShiftStart = TimeSpan.FromHours(7);
+}, RunTests: false);
+```
+
+The single-date overload uses the supplied calendar date in the department timezone.
+The month/year overload uses department midnight at the start of each month.
+For explicit ranges, unspecified `DateTime` values mean department local time;
+UTC values retain their instant and `DateTimeKind.Local` values retain normal .NET
+local-time conversion semantics. Ambiguous or nonexistent department times during
+DST transitions are rejected; use UTC values to identify the intended instant.
+
+**Behavior change:** returned `StartShift`, `EndShift`, `ResultRange.Begin`, and
+`ResultRange.End` now contain UTC values. Convert them to the department timezone
+for display with `TimeZoneInfo.ConvertTimeFromUtc`. Durations use elapsed time,
+including shifts crossing daylight-saving transitions. Zone-less response times
+are interpreted as UTC.
+
+Transport failures and unsuccessful HTTP responses now throw their original
+exceptions instead of returning null streams. XML `<error>` responses throw
+`InvalidDataException` with the API error code and message. Missing result sections
+are rejected; present but empty sections return empty collections. Callers of the
+`Stream*` methods must dispose the returned stream, which also disposes its HTTP
+response. The `Get*` methods manage these resources automatically.
+
+## Regression tests
+
+The isolated regression suite uses fake HTTP responses and no Aladtec credentials.
+Run with a .NET 8 SDK:
+
+```sh
+dotnet test tests/FireManager.RegressionTests/FireManager.RegressionTests.csproj
+```
+
+It covers missing member attributes, email/phone mapping, schedule positions,
+empty staffing results, request timezone boundaries, DST durations, HTTP/API
+failures, and response disposal. The library itself still targets .NET 5.
