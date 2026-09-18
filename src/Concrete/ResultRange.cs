@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 
 namespace FireManager.Concrete
@@ -21,15 +21,19 @@ namespace FireManager.Concrete
         public DateTime Begin
         {
             get { return begin; }
-            set { begin = TimeZoneInfo.ConvertTime(value, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")); }
+            set { begin = AsUtc(value); }
         }
 
         [XmlElement("end")]
         public DateTime End
         {
             get { return end; }
-            set { end = TimeZoneInfo.ConvertTime(value, TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")); }
+            set { end = AsUtc(value); }
         }
+
+        private static DateTime AsUtc(DateTime value) => value.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            : value.ToUniversalTime();
 
         private DateTime begin;
         private DateTime end;

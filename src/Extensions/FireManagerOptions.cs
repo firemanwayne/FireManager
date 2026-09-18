@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FireManager.Extensions
 {
@@ -48,6 +48,23 @@ namespace FireManager.Extensions
             private set
             {
                 url = value;
+            }
+        }
+
+        // Explicit department timezone; never infer it from the application host.
+        public TimeZoneInfo DepartmentTimeZone { get; set; } = GetCentralTimeZone();
+
+        public TimeSpan ShiftStart { get; set; } = TimeSpan.FromHours(5);
+
+        private static TimeZoneInfo GetCentralTimeZone()
+        {
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById("America/Chicago");
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
             }
         }
 

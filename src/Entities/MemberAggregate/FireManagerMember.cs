@@ -1,4 +1,5 @@
-﻿using FireManager.Concrete;
+using FireManager.Concrete;
+using System;
 using System.Linq;
 
 namespace FireManager.Entities
@@ -9,17 +10,24 @@ namespace FireManager.Entities
 
         FireManagerMember(Member Member)
         {
-            Name = Member.Name.Value ?? "Unknown";
+            if (Member == null)
+                throw new ArgumentNullException(nameof(Member));
+
+            string AttributeValue(int id) => Member.Attributes?.Attribute?
+                .FirstOrDefault(a => a != null && a.Id == id)?.Value?.value;
+
+            Name = Member.Name?.Value ?? "Unknown";
             MemberId = Member.Id.ToString();
-            Email = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(9)).Value?.value ?? "Unknown";
-            PhoneNumber = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(9)).Value?.value ?? "Unknown";
-            EmployeeTypeId = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(34)).Id.ToString();
-            EmployeeType = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(34)).Value?.value ?? "Unknown";
-            HireDate = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(5)).Value?.value ?? "Unknown";
-            Rank = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(53)).Value?.value ?? "Unknown";
-            Station = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(45)).Value?.value ?? "Unknown";
-            PrNumber = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(PRNumberAttributeId)).Value?.value ?? "Unknown";
-            Status = Member.Attributes.Attribute.FirstOrDefault(a => a.Id.Equals(104)).Value?.value;
+            Email = AttributeValue(9) ?? "Unknown";
+            PhoneNumber = AttributeValue(7) ?? "Unknown";
+            EmployeeTypeId = Member.Attributes?.Attribute?
+                .FirstOrDefault(a => a != null && a.Id == 34)?.Id.ToString();
+            EmployeeType = AttributeValue(34) ?? "Unknown";
+            HireDate = AttributeValue(5) ?? "Unknown";
+            Rank = AttributeValue(53) ?? "Unknown";
+            Station = AttributeValue(45) ?? "Unknown";
+            PrNumber = AttributeValue(PRNumberAttributeId) ?? "Unknown";
+            Status = AttributeValue(104);
         }
 
         public string MemberId { get; }

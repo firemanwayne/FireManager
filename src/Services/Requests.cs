@@ -1,4 +1,4 @@
-﻿using FireManager.Extensions;
+using FireManager.Extensions;
 using FireManager.Interface;
 using Microsoft.Extensions.Options;
 using System;
@@ -18,6 +18,20 @@ namespace FireManager.Services
         private string AccountId => Options.Accid;
         private string AccountKey => Options.AccKey;
 
+        private DateTime ToUtc(DateTime value)
+        {
+            if (value.Kind == DateTimeKind.Utc)
+                return value;
+            if (value.Kind == DateTimeKind.Local)
+                return value.ToUniversalTime();
+
+            var zone = Options.DepartmentTimeZone
+                ?? throw new InvalidOperationException("DepartmentTimeZone must be configured.");
+            if (zone.IsInvalidTime(value) || zone.IsAmbiguousTime(value))
+                throw new ArgumentException("The department time is invalid or ambiguous; supply an explicit UTC instant.", nameof(value));
+            return TimeZoneInfo.ConvertTimeToUtc(value, zone);
+        }
+
         public IDictionary<string, string> AllSchedulesByMonth(DateTime RequestDate)
         {
             IDictionary<string, string> values = new Dictionary<string, string>()
@@ -25,8 +39,8 @@ namespace FireManager.Services
                 ["accid"] = AccountId,
                 ["acckey"] = AccountKey,
                 ["cmd"] = "getScheduledTimeRanges",
-                ["bt"] = RequestDate.ToUniversalTime().ToString("s") + "Z",
-                ["et"] = RequestDate.AddMonths(1).ToUniversalTime().ToString("s") + "Z",
+                ["bt"] = ToUtc(RequestDate).ToString("s") + "Z",
+                ["et"] = ToUtc(RequestDate.AddMonths(1)).ToString("s") + "Z",
                 ["sch"] = "all",
                 ["isp"] = "1",
                 ["itt"] = "0"
@@ -35,14 +49,18 @@ namespace FireManager.Services
         }
         public IDictionary<string, string> AllSchedulesByDate(DateTime RequestDate)
         {
-            DateTime Request = new(RequestDate.Year, RequestDate.Month, RequestDate.Day, 5, 0, 0);
+            if (Options.ShiftStart < TimeSpan.Zero || Options.ShiftStart >= TimeSpan.FromDays(1))
+                throw new ArgumentOutOfRangeException(nameof(Options.ShiftStart));
+
+            DateTime Request = DateTime.SpecifyKind(RequestDate.Date, DateTimeKind.Unspecified)
+                .Add(Options.ShiftStart);
             IDictionary<string, string> values = new Dictionary<string, string>()
             {
                 ["accid"] = AccountId,
                 ["acckey"] = AccountKey,
                 ["cmd"] = "getScheduledTimeRanges",
-                ["bt"] = Request.ToUniversalTime().ToString("s") + "Z",
-                ["et"] = Request.AddHours(24).ToUniversalTime().ToString("s") + "Z",
+                ["bt"] = ToUtc(Request).ToString("s") + "Z",
+                ["et"] = ToUtc(Request.AddDays(1)).ToString("s") + "Z",
                 ["sch"] = "all",
                 ["isp"] = "1",
                 ["itt"] = "0"
@@ -56,8 +74,8 @@ namespace FireManager.Services
                 ["accid"] = AccountId,
                 ["acckey"] = AccountKey,
                 ["cmd"] = "getScheduledTimeRanges",
-                ["bt"] = StartDate.ToUniversalTime().ToString("s") + "Z",
-                ["et"] = EndDate.ToUniversalTime().ToString("s") + "Z",
+                ["bt"] = ToUtc(StartDate).ToString("s") + "Z",
+                ["et"] = ToUtc(EndDate).ToString("s") + "Z",
                 ["sch"] = "all",
                 ["isp"] = "1",
                 ["itt"] = "0"

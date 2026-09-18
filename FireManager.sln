@@ -1,9 +1,13 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FireManager", "FireManager.csproj", "{AE8CE8D6-C38B-4AC6-A495-A425562DDC5B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{46A6B514-FB41-4FD0-AF26-BC653E20453B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireManager.RegressionTests", "tests\FireManager.RegressionTests\FireManager.RegressionTests.csproj", "{7EF7BE16-D06F-42EA-A985-DE2715A36C79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,11 +19,18 @@ Global
 		{AE8CE8D6-C38B-4AC6-A495-A425562DDC5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE8CE8D6-C38B-4AC6-A495-A425562DDC5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE8CE8D6-C38B-4AC6-A495-A425562DDC5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF7BE16-D06F-42EA-A985-DE2715A36C79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF7BE16-D06F-42EA-A985-DE2715A36C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF7BE16-D06F-42EA-A985-DE2715A36C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF7BE16-D06F-42EA-A985-DE2715A36C79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2F2A263-A18D-4DD9-B45C-EA6F380D9E8A}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7EF7BE16-D06F-42EA-A985-DE2715A36C79} = {46A6B514-FB41-4FD0-AF26-BC653E20453B}
 	EndGlobalSection
 EndGlobal
